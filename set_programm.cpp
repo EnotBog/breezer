@@ -22,8 +22,6 @@ void programm(int programm) {
       Serial.print("programm 2");
       break;
     case 3:  // автоматический режим
-      // if(sensor>400){moving(225);digitalWrite(REL_2,LOW);digitalWrite(REL_1,HIGH);}
-      // if else (sensor>200){moving(100);digitalWrite(REL_1,LOW);digitalWrite(REL_2,HIGH);}
       set_programm = 3;
       power_state = 3;
       Serial.print("programm 3");

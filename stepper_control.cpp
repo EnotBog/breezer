@@ -17,13 +17,15 @@ void moving(int targetOpenness) {
 
 void initPosition() {
   btnTimer = millis();
-  while (true) {
-    myStepper.step(50);
-    if (millis() - btnTimer > 3000) {
-      if (!digitalRead(BUT_ZAS)) {
-        power_state = 0;
-        check_error = 1;
-        break;
+  if (!digitalRead(BUT_ZAS)) {
+    while (true) {
+      myStepper.step(50);
+      if (millis() - btnTimer > 3000) {
+        if (!digitalRead(BUT_ZAS)) {
+          power_state = 0;
+          check_error = 1;
+          break;
+        }
       }
     }
 
@@ -33,6 +35,7 @@ void initPosition() {
       break;
     }
   }
+
   digitalWrite(IN1, LOW);
   digitalWrite(IN2, LOW);
   digitalWrite(IN3, LOW);

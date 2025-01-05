@@ -18,27 +18,6 @@ void setSpeedFan(int speed) {
   }
 }
 
-void setS() {
-  int buf = (power_state == 0) ? 1 : 2;
-  if (check_error != 0) {
-    buf = 3;
-  }
-  
-  switch (buf) {
-    case 1:
-      digitalWrite(S_RED, HIGH);
-      digitalWrite(S_GREEN, LOW);
-      break;
-    case 2:
-      digitalWrite(S_RED, LOW);
-      digitalWrite(S_GREEN, HIGH);
-      break;
-    case 3:
-      digitalWrite(S_RED, LOW);
-      digitalWrite(S_GREEN, LOW);
-      digitalWrite(S_ERROR, HIGH);
-      break;
-  }
-}
+
 
 

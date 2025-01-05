@@ -27,6 +27,7 @@ void reconnect() {
       client.subscribe((temp_topic + "/vozduh/programm").c_str());
       client.subscribe((temp_topic + "/vozduh/CO2").c_str());  // ТОПИК СО2
       Serial.println("connected");
+      check_error = 0;
     } else {
       Serial.print("failed, rc=");
       Serial.print(client.state());

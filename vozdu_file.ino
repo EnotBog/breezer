@@ -5,6 +5,7 @@
 #include "auto_control.h"
 #include "temperature.h"
 #include "config.h"
+#include "check_error.h"
 
 void setup() {
   pinMode(REL_1, OUTPUT);
@@ -31,6 +32,13 @@ void setup() {
 }
 
 void loop() {
+  if (millis() - btnTimer3 > 1000) {
+    if ((check_error != 0) && verified_error) {
+      setS();
+      checkError(check_error);
+      client.loop();
+    }
+  }
   if (!client.connected()) {
     reconnect();
   }

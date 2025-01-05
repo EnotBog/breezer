@@ -6,6 +6,7 @@
 #include <Stepper.h>
 #include <OneWire.h>
 #include <DallasTemperature.h>
+#include <esp_sleep.h>
 
 // Определение GPIO
 #define BUT_ZAS 33
@@ -20,6 +21,7 @@
 #define S_ERROR 27
 
 extern int auto_mode;
+extern bool verified_error;
 extern int CO2;
 extern int check_error;
 extern int power_state;
@@ -33,6 +35,7 @@ extern const int stepsPerRevolution;  // 700 ШАГОВ
 
 extern uint32_t btnTimer;
 extern uint32_t btnTimer2;
+extern uint32_t btnTimer3;
 extern bool buttom_z;
 
 extern Stepper myStepper;
