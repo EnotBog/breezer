@@ -7,5 +7,5 @@ void setup_wifi();
 void reconnect();
 void callback(char* topic, byte* payload, unsigned int length);
 void updateValues();
-
+String creatJsonString();
 #endif

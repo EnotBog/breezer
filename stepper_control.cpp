@@ -27,19 +27,18 @@ void initPosition() {
           break;
         }
       }
+      if (digitalRead(BUT_ZAS)) {
+        openness = 0;
+        set_programm = 4;
+        break;
+      }
     }
 
-    if (digitalRead(BUT_ZAS)) {
-      openness = 0;
-      set_programm = 4;
-      break;
-    }
+    digitalWrite(IN1, LOW);
+    digitalWrite(IN2, LOW);
+    digitalWrite(IN3, LOW);
+    digitalWrite(IN4, LOW);
   }
-
-  digitalWrite(IN1, LOW);
-  digitalWrite(IN2, LOW);
-  digitalWrite(IN3, LOW);
-  digitalWrite(IN4, LOW);
 }
 
 void checkPosition() {

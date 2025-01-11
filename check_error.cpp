@@ -5,26 +5,32 @@
 #include "soc/rtc_cntl_reg.h"
 #include "soc/rtc.h"
 #include "driver/rtc_io.h"
+#include "set_programm.h"
 
 void checkError(int err) {
-  switch (err) {
-    case 1:
-      stopJob();
-      break;
-    case 2:
-      setSpeedFan(0);
-      power_state = 0;
-      initPosition();
-      verified_error = 1;
-    case 3:  //отписаться от паблика сбросить показания CO2
-      setSpeedFan(0);
-      client.unsubscribe((temp_topic + "/vozduh/CO2").c_str());
-      set_programm = 4;
-      CO2 = 0;
-      power_state = 0;
-      initPosition();
-      verified_error = 1;
-      break;
+  if (verified_error) {
+    return;
+  } else {
+    switch (err) {
+      case 1:
+        stopJob();
+        break;
+      case 2:
+        setSpeedFan(0);
+        power_state = 0;
+        initPosition();
+        verified_error = 1;
+        break;
+      case 3:  //отписаться от паблика сбросить показания CO2
+        setSpeedFan(0);
+        initPosition();
+        programm(4);
+        CO2 = 0;
+        power_state = 0;
+        verified_error = 1;
+        client.unsubscribe((temp_topic + "/vozduh/CO2").c_str());
+        break;
+    }
   }
 };
 

@@ -1,4 +1,5 @@
 #include "config.h"
+bool CO2_online = false;
 bool verified_error = 0;
 int auto_mode;
 int CO2;
@@ -17,6 +18,7 @@ uint32_t btnTimer2;
 uint32_t btnTimer3;
 bool buttom_z;
 
+StaticJsonDocument<100> doc;
 Stepper myStepper(stepsPerRevolution, IN4, IN3, IN2, IN1);
 WiFiClient espClient;
 PubSubClient client(espClient);

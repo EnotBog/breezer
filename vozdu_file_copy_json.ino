@@ -6,6 +6,8 @@
 #include "temperature.h"
 #include "config.h"
 #include "check_error.h"
+#include "set_programm.h"
+#include "time_ntp.h"
 
 void setup() {
   pinMode(REL_1, OUTPUT);
@@ -25,6 +27,7 @@ void setup() {
   setup_wifi();
   client.setServer(mqtt_server, mqtt_port);
   client.setCallback(callback);
+  configTime(gmtOffset_sec, daylightOffset_sec, ntpServer);
 
   myStepper.setSpeed(250);
   sensors.begin();
@@ -33,11 +36,12 @@ void setup() {
 
 void loop() {
   if (millis() - btnTimer3 > 1000) {
-    if ((check_error != 0) && verified_error) {
-      setS();
+    setS();
+    if (check_error != 0) {
       checkError(check_error);
-      client.loop();
     }
+    client.loop();
+    btnTimer3 = millis();
   }
   if (!client.connected()) {
     reconnect();
@@ -48,12 +52,20 @@ void loop() {
     Serial.println(check_error);
     getTemp();
     updateValues();
-    setS();
     btnTimer2 = millis();
+    if (!CO2_online) {
+      digitalWrite(REL_1, HIGH);
+      digitalWrite(REL_2, HIGH);
+      fan_speed = 0;
+      initPosition();
+      programm(4);
+      power_state = 0;
+    }  // выключить всё
   }
 
   if ((millis() - btnTimer > 5000) && (set_programm == 3)) {
     autoMode();
     btnTimer = millis();
+    getTime();
   }
 }

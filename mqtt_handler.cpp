@@ -1,8 +1,22 @@
+#include "HardwareSerial.h"
 #include "mqtt_handler.h"
 #include "auto_control.h"
 #include "stepper_control.h"
 #include "set_programm.h"
 #include "config.h"
+
+String creatJsonString() {
+  String buf;
+  doc["openness"] = openness;
+  doc["programm"] = set_programm;
+  doc["speed"] = fan_speed;
+  doc["closed"] = !buttom_z;
+  doc["power"] = power_state;
+  doc["fan"] = fan_state;
+  doc["temperature"] = temperature;
+  serializeJson(doc, buf);
+  return buf;
+};
 
 void setup_wifi() {
   WiFi.mode(WIFI_STA);
@@ -25,7 +39,8 @@ void reconnect() {
       client.subscribe((temp_topic + "/vozduh/speed").c_str());
       client.subscribe((temp_topic + "/vozduh/power").c_str());
       client.subscribe((temp_topic + "/vozduh/programm").c_str());
-      client.subscribe((temp_topic + "/vozduh/CO2").c_str());  // ТОПИК СО2
+      client.subscribe((temp_topic + "/vozduh/sensor").c_str());  // ТОПИК СО2
+      client.subscribe((temp_topic + "/vozduh/CO2/LWT").c_str());
       Serial.println("connected");
       check_error = 0;
     } else {
@@ -46,11 +61,12 @@ void callback(char* topic, byte* payload, unsigned int length) {
   // Home_67/vozduh/CO2 качество воздуха
 
   String data_pay;
+  String str_topic = String(topic);
   for (int i = 0; i < length; i++) {
     data_pay += String((char)payload[i]);
   }
 
-  if (String(topic) == "Home_67/vozduh/speed") {
+  if (str_topic == "Home_67/vozduh/speed") {
     Serial.println("Home_67/vozduh/speed");
     switch (data_pay.toInt()) {
       case 0:
@@ -72,14 +88,14 @@ void callback(char* topic, byte* payload, unsigned int length) {
     set_programm = 4;
   }
 
-  if (String(topic) == "Home_67/vozduh/openness") {
+  if (str_topic == "Home_67/vozduh/openness") {
     Serial.println("Home_67/vozduh/openness");
     Serial.println(data_pay.toInt());
     moving(data_pay.toInt());
     set_programm = 4;
   }
 
-  if (String(topic) == "Home_67/vozduh/power") {
+  if (str_topic == "Home_67/vozduh/power") {
     Serial.println("Home_67/vozduh/power");
     if (data_pay == "0") {
       digitalWrite(REL_1, HIGH);
@@ -93,13 +109,25 @@ void callback(char* topic, byte* payload, unsigned int length) {
     }
   }
 
-  if (String(topic) == "Home_67/vozduh/programm") {
+  if (str_topic == "Home_67/vozduh/programm") {
     Serial.println("Home_67/vozduh/programm");
     programm(data_pay.toInt());
   }
 
-  if (String(topic) == "Home_67/vozduh/CO2") {
-    CO2 = data_pay.toInt();
+  if (str_topic == "Home_67/vozduh/sensor") {
+    Serial.println(data_pay);
+    JsonDocument co2;
+    DeserializationError error = deserializeJson(co2, data_pay);
+    if (error) {
+      Serial.print(F("deserializeJson() failed: "));
+      Serial.println(error.f_str());
+      return;
+    }
+    CO2 = co2["Co2"];
+  }
+
+  if (str_topic == "Home_67/vozduh/CO2/LWT") {
+    CO2_online = (data_pay == "online") ? true : false;
   }
 }
 
@@ -127,12 +155,12 @@ void updateValues() {
   } else {
     fan_state = 0;
   }
-
-  client.publish((temp_topic + "/vozduh/openness/state").c_str(), (String(openness)).c_str());
-  client.publish((temp_topic + "/vozduh/programm/state").c_str(), (String(set_programm)).c_str());
-  client.publish((temp_topic + "/vozduh/speed/state").c_str(), (String(fan_speed)).c_str());
-  client.publish((temp_topic + "/vozduh/closed/state").c_str(), (String(!buttom_z)).c_str());
-  client.publish((temp_topic + "/vozduh/power/state").c_str(), (String(power_state)).c_str());
-  client.publish((temp_topic + "/vozduh/fan/state").c_str(), (String(fan_state)).c_str());
-  client.publish((temp_topic + "/vozduh/temperature/state").c_str(), (String(temperature)).c_str());
+  client.publish((temp_topic + "/vozduh").c_str(), (creatJsonString()).c_str());
+  // client.publish((temp_topic + "/vozduh/openness/state").c_str(), (String(openness)).c_str());
+  // client.publish((temp_topic + "/vozduh/programm/state").c_str(), (String(set_programm)).c_str());
+  // client.publish((temp_topic + "/vozduh/speed/state").c_str(), (String(fan_speed)).c_str());
+  // client.publish((temp_topic + "/vozduh/closed/state").c_str(), (String(!buttom_z)).c_str());
+  // client.publish((temp_topic + "/vozduh/power/state").c_str(), (String(power_state)).c_str());
+  // client.publish((temp_topic + "/vozduh/fan/state").c_str(), (String(fan_state)).c_str());
+  // client.publish((temp_topic + "/vozduh/temperature/state").c_str(), (String(temperature)).c_str());
 }

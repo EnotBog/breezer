@@ -3,5 +3,4 @@
 void getTemp() {
   sensors.requestTemperatures();
   temperature = sensors.getTempCByIndex(0);
-  Serial.println(temperature);
 }

@@ -1,12 +1,14 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
+#include <ArduinoJson.h>
 #include <WiFi.h>
 #include <PubSubClient.h>
 #include <Stepper.h>
 #include <OneWire.h>
 #include <DallasTemperature.h>
 #include <esp_sleep.h>
+#include "time.h"
 
 // Определение GPIO
 #define BUT_ZAS 33
@@ -20,6 +22,14 @@
 #define S_RED 12
 #define S_ERROR 27
 
+extern const long gmtOffset_sec;
+extern const int daylightOffset_sec;
+extern const char* ntpServer;
+extern struct tm timeinfo;
+extern int time_esp;
+extern bool night_now;
+
+extern bool CO2_online;
 extern int auto_mode;
 extern bool verified_error;
 extern int CO2;
@@ -38,6 +48,7 @@ extern uint32_t btnTimer2;
 extern uint32_t btnTimer3;
 extern bool buttom_z;
 
+extern StaticJsonDocument<100> doc;
 extern Stepper myStepper;
 extern WiFiClient espClient;
 extern PubSubClient client;

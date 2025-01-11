@@ -11,6 +11,7 @@ void programm(int programm) {
       digitalWrite(REL_2, HIGH);
       set_programm = 1;
       fan_speed = 1;
+      auto_mode = 0;
       Serial.print("programm 1");
       break;
     case 2:  // максимальное открытие и максимальный режим вентилятора
@@ -20,10 +21,12 @@ void programm(int programm) {
       set_programm = 2;
       fan_speed = 2;
       Serial.print("programm 2");
+      auto_mode = 0;
       break;
     case 3:  // автоматический режим
       set_programm = 3;
       power_state = 3;
+      auto_mode = 0;
       Serial.print("programm 3");
       break;
     case 4:  // пользовательский
